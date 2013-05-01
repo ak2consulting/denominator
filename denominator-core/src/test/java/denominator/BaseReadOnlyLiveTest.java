@@ -37,9 +37,10 @@ public abstract class BaseReadOnlyLiveTest extends BaseProviderLiveTest {
                 ResourceRecordSet<?> rrs = rrsIterator.next();
                 recordTypeCounts.getUnchecked(rrs.getType()).addAndGet(rrs.size());
                 checkRRS(rrs);
-                Iterator<ResourceRecordSet<?>> byNameAndType = roApi(zoneName).listByNameAndType(rrs.getName(), rrs.getType());
-                assertTrue(byNameAndType.hasNext(), "could not lookup by name and type: " + rrs);
-                assertTrue(ImmutableList.copyOf(byNameAndType).contains(rrs));
+                List<ResourceRecordSet<?>> byNameAndType = ImmutableList.copyOf(roApi(zoneName)
+                        .listByNameAndType(rrs.getName(), rrs.getType()));
+                assertFalse(byNameAndType.isEmpty(), "could not lookup by name and type: " + rrs);
+                assertTrue(byNameAndType.contains(rrs), rrs + " not found in list by name and type: " + byNameAndType);
             }
         }
         logRecordSummary();
